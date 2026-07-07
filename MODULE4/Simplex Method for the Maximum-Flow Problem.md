@@ -1,460 +1,1090 @@
-# Simplex Method for the Maximum-Flow Problem (Design and Analysis of Algorithms)
+# Design and Analysis of Algorithms (DAA)
+# Simplex Method, Maximum-Flow Problem & Iterative Improvement
+### Complete Exam Study Guide
 
-> **Semester Exam Study Guide**
+> **Semester Exam Notes**
 >
-> **Topic:** Simplex Method Applied to Maximum-Flow Problem
+> Topics Covered:
 >
-> **Course:** Design and Analysis of Algorithms
+> - Simplex Method (Linear Programming)
+> - Maximum-Flow Problem
+> - Iterative Improvement
+> - Relationship between these optimization techniques
 
 ---
 
 # Table of Contents
 
-- [1. Introduction](#1-introduction)
-- [2. What is the Maximum-Flow Problem?](#2-what-is-the-maximum-flow-problem)
-- [3. What is the Simplex Method?](#3-what-is-the-simplex-method)
-- [4. Why is the Simplex Method Used?](#4-why-is-the-simplex-method-used)
-- [5. When is it Used?](#5-when-is-it-used)
-- [6. Where is it Used?](#6-where-is-it-used)
-- [7. Mathematical Formulation of Maximum Flow as a Linear Programming Problem](#7-mathematical-formulation-of-maximum-flow-as-a-linear-programming-problem)
-- [8. How to Solve Maximum Flow Using the Simplex Method](#8-how-to-solve-maximum-flow-using-the-simplex-method)
-- [9. Visual Explanation of the Network](#9-visual-explanation-of-the-network)
-- [10. Step-by-Step Execution](#10-step-by-step-execution)
-- [11. Example Problem](#11-example-problem)
-- [12. Java Implementation](#12-java-implementation)
-- [13. Time Complexity](#13-time-complexity)
-- [14. Advantages](#14-advantages)
-- [15. Limitations and Edge Cases](#15-limitations-and-edge-cases)
-- [16. Comparison with Other Maximum Flow Algorithms](#16-comparison-with-other-maximum-flow-algorithms)
-- [17. Exam Tips](#17-exam-tips)
-- [18. Frequently Asked Questions](#18-frequently-asked-questions)
-- [19. Summary](#19-summary)
+- [1. Why These Topics Matter](#1-why-these-topics-matter)
+- [2. When & Where These Are Used](#2-when--where-these-are-used)
+- [3. Relationship Between the Topics](#3-relationship-between-the-topics)
+- [4. How to Solve Optimization Problems](#4-how-to-solve-optimization-problems)
+- [5. Simplex Method](#5-simplex-method)
+- [6. Maximum-Flow Problem](#6-maximum-flow-problem)
+- [7. Iterative Improvement](#7-iterative-improvement)
+- [8. Visual Explanations](#8-visual-explanations)
+- [9. Java Implementations](#9-java-implementations)
+- [10. Worked Examples](#10-worked-examples)
+- [11. Complexity Analysis](#11-complexity-analysis)
+- [12. Limitations & Edge Cases](#12-limitations--edge-cases)
+- [13. Comparison Table](#13-comparison-table)
+- [14. Exam Tips](#14-exam-tips)
+- [15. Key Takeaways](#15-key-takeaways)
 
 ---
 
-# 1. Introduction
+# 1. Why These Topics Matter
 
-The **Maximum Flow Problem** determines the **largest amount of flow** that can be transported from a **source** node to a **sink** node in a network while satisfying capacity constraints.
+Optimization is one of the most important areas of computer science.
 
-Although specialized algorithms like **Ford-Fulkerson** and **Edmonds-Karp** are commonly used, the maximum-flow problem can also be formulated as a **Linear Programming (LP)** problem and solved using the **Simplex Method**.
+Many real-world problems ask:
 
-The Simplex Method is a general optimization technique for solving linear programming problems.
+- How can we maximize profit?
+- How can we minimize cost?
+- How can we allocate limited resources?
+- How can we transport maximum goods?
+- How can we schedule work efficiently?
+
+Three important optimization techniques are:
+
+- **Simplex Method**
+- **Maximum Flow**
+- **Iterative Improvement**
+
+Together they form the foundation of operations research, optimization theory, AI, networking, logistics, transportation, and economics.
 
 ---
 
-# 2. What is the Maximum-Flow Problem?
+## Why Engineers Learn Them
 
-Given
+These algorithms teach how to:
 
-- Source vertex **S**
-- Sink vertex **T**
-- Directed graph
-- Capacity on every edge
+- Optimize systems
+- Improve solutions step by step
+- Solve constrained problems
+- Design efficient algorithms
+- Model real-world situations mathematically
 
-Find the **maximum possible flow** from S to T.
+---
 
-## Example
+# 2. When & Where These Are Used
 
-```text
-        10
-   S --------> A
-   |           |
-5  |           |15
-   v           v
-   B --------> T
-        10
+## Applications of Simplex Method
+
+- Manufacturing planning
+- Production optimization
+- Budget allocation
+- Diet optimization
+- Airline scheduling
+- Investment planning
+
+---
+
+## Applications of Maximum Flow
+
+- Internet routing
+- Water pipelines
+- Road traffic
+- Electrical grids
+- Supply chain
+- Image segmentation
+- Network security
+
+---
+
+## Applications of Iterative Improvement
+
+- Machine Learning
+- Neural Networks
+- Local Search
+- Hill Climbing
+- Simulated Annealing
+- Maximum Matching
+- Simplex Method itself
+
+---
+
+## Industry Examples
+
+| Industry | Application |
+|-----------|-------------|
+| Amazon | Delivery optimization |
+| Google | Network routing |
+| Uber | Driver assignment |
+| Airlines | Crew scheduling |
+| Hospitals | Staff scheduling |
+| Telecom | Bandwidth allocation |
+| Banking | Portfolio optimization |
+
+---
+
+# 3. Relationship Between the Topics
+
 ```
+              Optimization
 
-Goal:
+                    │
 
-```
-Maximize total flow reaching T.
-```
+      ┌─────────────┼─────────────┐
 
----
+      │             │             │
 
-# 3. What is the Simplex Method?
+  Simplex      Maximum Flow   Iterative
 
-The **Simplex Method** is an algorithm used to solve **Linear Programming (LP)** problems.
+   Method                       Improvement
 
-It works by:
+      │             │             │
 
-- Converting the optimization problem into linear equations
-- Moving from one feasible solution to another
-- Improving the objective value at every iteration
-- Stopping when the optimal solution is reached
+Linear Program   Network     Improve Current
 
----
+                  Flow          Solution
 
-## General LP Form
+      │             │             │
 
-Maximize
+      └─────────────┼─────────────┘
 
-```
-Z = c1x1 + c2x2 + ... + cnxn
-```
-
-Subject to
-
-```
-Ax ≤ b
-
-x ≥ 0
-```
-
-The maximum-flow problem fits perfectly into this framework.
-
----
-
-# 4. Why is the Simplex Method Used?
-
-Simplex is used because maximum flow is actually a **linear optimization problem**.
-
-It helps when:
-
-- Flow must satisfy multiple constraints
-- Additional restrictions exist
-- Network optimization combines several objectives
-- Researchers solve generalized flow problems
-
----
-
-## Practical Motivation
-
-Instead of simply finding a path,
-
-Simplex optimizes:
-
-- transportation cost
-- production
-- shipping
-- communication bandwidth
-- water distribution
-
-simultaneously.
-
----
-
-# 5. When is it Used?
-
-Simplex is appropriate when
-
-- Problem is formulated as Linear Programming
-- Constraints are linear
-- Capacities are known
-- Flow conservation is required
-
----
-
-## Not Recommended When
-
-For ordinary maximum-flow problems,
-
-Prefer
-
-- Ford-Fulkerson
-- Edmonds-Karp
-- Dinic
-
-because they are much faster.
-
----
-
-# 6. Where is it Used?
-
-## Telecommunications
-
-Bandwidth allocation
-
-```text
-Router A ---> Router B ---> Router C
-```
-
-Find maximum data transmission.
-
----
-
-## Transportation
-
-```text
-Factory
-   |
-Warehouse
-   |
-Retail Store
-```
-
-Maximize shipment quantity.
-
----
-
-## Water Distribution
-
-```text
-Reservoir
-
-↓
-
-Treatment Plant
-
-↓
-
-City
+            Better Optimal Solution
 ```
 
 ---
 
-## Internet Routing
+## Common Goal
 
-Find maximum packets transmitted.
-
----
-
-## Electricity Networks
-
-Maximize power transfer.
+All three algorithms attempt to improve a solution until the best possible solution is found.
 
 ---
 
-## Airline Scheduling
-
-Optimize passenger movement.
-
----
-
-## Supply Chains
-
-Move maximum products.
-
----
-
-## Pipeline Networks
-
-Transport maximum oil or gas.
-
----
-
-# 7. Mathematical Formulation of Maximum Flow as a Linear Programming Problem
-
-Let
-
-```
-xij = flow on edge i → j
-```
-
-Objective
-
-```
-Maximize
-
-Flow leaving source
-```
-
-Subject to
-
-## Capacity Constraints
-
-```
-xij ≤ capacity(i,j)
-```
-
----
-
-## Non-negativity
-
-```
-xij ≥ 0
-```
-
----
-
-## Flow Conservation
-
-For every intermediate node,
-
-```
-Incoming Flow = Outgoing Flow
-```
-
----
-
-Example
-
-```text
-A
-
-Incoming = xSA
-
-Outgoing = xAT
-
-Constraint
-
-xSA = xAT
-```
-
----
-
-# 8. How to Solve Maximum Flow Using the Simplex Method
+# 4. How to Solve Optimization Problems
 
 ## Step 1
 
-Draw the network.
+Identify
+
+- Variables
+- Constraints
+- Objective
 
 ---
 
 ## Step 2
 
-Assign variables.
+Model problem
 
 Example
 
 ```
-xSA
+Maximize Profit
 
-xSB
+Subject to
 
-xAT
-
-xBT
+Resource Constraints
 ```
 
 ---
 
 ## Step 3
 
-Write capacity constraints.
+Choose algorithm
 
-Example
-
-```
-xSA ≤ 10
-
-xSB ≤ 5
-
-xAT ≤ 15
-
-xBT ≤ 10
-```
+| Problem | Algorithm |
+|-----------|-----------|
+| Linear Optimization | Simplex |
+| Network Routing | Maximum Flow |
+| General Optimization | Iterative Improvement |
 
 ---
 
 ## Step 4
 
-Write flow conservation equations.
+Improve solution repeatedly
+
+Continue until
+
+```
+No Better Solution Exists
+```
 
 ---
 
-## Step 5
+# 5. Simplex Method
 
-Write objective function.
+---
+
+## Definition
+
+Simplex Method is an algorithm used to solve **Linear Programming (LP)** problems.
+
+It moves from one feasible solution to another until the optimum solution is reached.
+
+---
+
+## Linear Programming Form
 
 ```
 Maximize
 
-Z = xAT + xBT
+Z = c1x1 + c2x2 + ...
+
+Subject To
+
+Ax ≤ b
+
+x ≥ 0
 ```
 
 ---
 
-## Step 6
+## Important Terms
 
-Convert LP into Simplex tableau.
+### Objective Function
 
----
+Function to maximize or minimize.
 
-## Step 7
+Example
 
-Perform pivot operations.
+```
+Maximize
 
----
-
-## Step 8
-
-Continue until no further improvement.
-
----
-
-## Step 9
-
-Read optimal flow.
-
----
-
-# 9. Visual Explanation of the Network
-
-## Network Diagram
-
-```mermaid
-graph LR
-
-S((Source))
-
-A((A))
-
-B((B))
-
-T((Sink))
-
-S --10--> A
-S --5--> B
-A --15--> T
-B --10--> T
+Z = 3x + 5y
 ```
 
 ---
 
-## Flow Representation
+### Constraints
+
+Restrictions.
+
+Example
+
+```
+x + y ≤ 4
+
+2x + y ≤ 5
+```
+
+---
+
+### Feasible Region
+
+Set of all valid solutions.
+
+---
+
+### Basic Feasible Solution (BFS)
+
+A corner point of feasible region.
+
+Simplex moves from one BFS to another.
+
+---
+
+## Working Principle
+
+```
+Initial Tableau
+
+↓
+
+Choose Entering Variable
+
+↓
+
+Choose Leaving Variable
+
+↓
+
+Pivot
+
+↓
+
+New Tableau
+
+↓
+
+Repeat
+
+↓
+
+Optimal Solution
+```
+
+---
+
+## Pivot Operation
+
+The pivot transforms the tableau into another equivalent tableau with an improved objective value.
+
+---
+
+# 6. Maximum-Flow Problem
+
+---
+
+## Definition
+
+Given
+
+- Source (S)
+- Sink (T)
+- Capacities
+
+Find
+
+```
+Maximum Flow
+```
+
+from Source to Sink.
+
+---
+
+## Example Network
 
 ```text
           10
-S ----------------> A
-|                  |
-|                  |15
-5                  |
-|                  |
-v                  v
-B ----------------> T
-        10
+     S -------- A
+     |          |
+   5 |          |15
+     |          |
+     B -------- T
+          10
 ```
 
 ---
 
-## Capacity Table
+## Terms
 
-| Edge | Capacity |
-|------|----------|
-| S→A | 10 |
-| S→B | 5 |
-| A→T | 15 |
-| B→T | 10 |
+### Capacity
+
+Maximum possible flow.
+
+### Flow
+
+Actual flow.
+
+### Residual Capacity
+
+Remaining unused capacity.
 
 ---
 
-# 10. Step-by-Step Execution
+## Ford-Fulkerson Algorithm
 
-## Initial Flow
+1. Find augmenting path.
+2. Find bottleneck capacity.
+3. Send flow.
+4. Update residual graph.
+5. Repeat.
+
+---
+
+## Why It Works
+
+Each iteration increases total flow.
+
+Stops when no augmenting path exists.
+
+---
+
+# 7. Iterative Improvement
+
+---
+
+## Definition
+
+Start with an initial solution.
+
+Improve it repeatedly until
+
+```
+No Better Solution Exists.
+```
+
+---
+
+## Generic Algorithm
+
+```
+Current Solution
+
+↓
+
+Generate Neighbor
+
+↓
+
+Better?
+
+↓
+
+Yes
+
+↓
+
+Replace Current
+
+↓
+
+Repeat
+
+↓
+
+No
+
+↓
+
+Stop
+```
+
+---
+
+## Used In
+
+- Simplex
+- Maximum Matching
+- Hill Climbing
+- Local Search
+- Simulated Annealing
+- Gradient Descent
+
+---
+
+# 8. Visual Explanations
+
+---
+
+# 8.1 Simplex Tableau
+
+Initial
+
+```
+Max Z = 3x + 2y
+
+Subject to
+
+x+y≤4
+
+2x+y≤5
+```
+
+Tableau
+
+```
++-------------------------------+
+
+|Basis| x | y | s1 | s2 | RHS |
+
++-------------------------------+
+
+| s1 | 1 | 1 | 1 | 0 | 4 |
+
+| s2 | 2 | 1 | 0 | 1 | 5 |
+
+| Z | -3|-2| 0 | 0 | 0 |
+
++-------------------------------+
+```
+
+---
+
+After Pivot
+
+```
+Pivot Element
+
+↓
+
+Basis Changes
+
+↓
+
+Objective Improves
+```
+
+```
++-------------------------------+
+
+|Basis| x | y | s1 | s2 | RHS |
+
++-------------------------------+
+
+| x |1|0|1|-1|1|
+
+| s1|0|1|-2|1|3|
+
+| Z |0|1|3|0|3|
+
++-------------------------------+
+```
+
+---
+
+# 8.2 Maximum Flow
+
+```text
+             10
+
+      S ------------ A
+
+      |              |
+
+   5  |              | 15
+
+      |              |
+
+      B ------------ T
+
+            10
+```
+
+Flow
+
+```
+S→A =10
+
+S→B =5
+
+A→T =10
+
+B→T =5
+
+Maximum Flow =15
+```
+
+---
+
+Residual Graph
+
+```
+Forward Capacity
+
+↓
+
+Reduced
+
+Backward Edge
+
+↓
+
+Created
+```
+
+---
+
+# 8.3 Iterative Improvement
+
+```
+Poor Solution
+
+↓
+
+Better
+
+↓
+
+Better
+
+↓
+
+Better
+
+↓
+
+Optimal
+```
+
+```
+Iteration
+
+1
+
+↓
+
+2
+
+↓
+
+3
+
+↓
+
+4
+
+↓
+
+Stop
+```
+
+---
+
+# 8.4 Basis Change
+
+```
+Old Basis
+
+{s1,s2}
+
+↓
+
+Pivot
+
+↓
+
+New Basis
+
+{x,s2}
+```
+
+---
+
+# 9. Java Implementations
+
+---
+
+# 9.1 Simplex Method (Educational Version)
+
+```java
+public class SimplexDemo {
+
+    public static void main(String[] args) {
+
+        System.out.println("Simplex Method");
+
+        System.out.println("1. Create Tableau");
+
+        System.out.println("2. Find Entering Variable");
+
+        System.out.println("3. Find Leaving Variable");
+
+        System.out.println("4. Pivot");
+
+        System.out.println("5. Repeat");
+
+        System.out.println("Optimal Solution Found");
+    }
+
+}
+```
+
+---
+
+# 9.2 Ford-Fulkerson Maximum Flow
+
+```java
+import java.util.*;
+
+public class MaxFlow {
+
+    static final int V = 6;
+
+    boolean bfs(int[][] rGraph, int s, int t, int[] parent) {
+
+        boolean[] visited = new boolean[V];
+
+        Queue<Integer> q = new LinkedList<>();
+
+        q.add(s);
+
+        visited[s] = true;
+
+        parent[s] = -1;
+
+        while (!q.isEmpty()) {
+
+            int u = q.poll();
+
+            for (int v = 0; v < V; v++) {
+
+                if (!visited[v] && rGraph[u][v] > 0) {
+
+                    q.add(v);
+
+                    parent[v] = u;
+
+                    visited[v] = true;
+                }
+            }
+        }
+
+        return visited[t];
+    }
+
+    int fordFulkerson(int[][] graph, int s, int t) {
+
+        int u, v;
+
+        int[][] rGraph = new int[V][V];
+
+        for (u = 0; u < V; u++)
+            for (v = 0; v < V; v++)
+                rGraph[u][v] = graph[u][v];
+
+        int[] parent = new int[V];
+
+        int maxFlow = 0;
+
+        while (bfs(rGraph, s, t, parent)) {
+
+            int pathFlow = Integer.MAX_VALUE;
+
+            for (v = t; v != s; v = parent[v]) {
+
+                u = parent[v];
+
+                pathFlow = Math.min(pathFlow,
+                        rGraph[u][v]);
+            }
+
+            for (v = t; v != s; v = parent[v]) {
+
+                u = parent[v];
+
+                rGraph[u][v] -= pathFlow;
+
+                rGraph[v][u] += pathFlow;
+            }
+
+            maxFlow += pathFlow;
+        }
+
+        return maxFlow;
+    }
+}
+```
+
+---
+
+# 9.3 Iterative Improvement Pattern
+
+```java
+public class IterativeImprovement {
+
+    public static void main(String[] args) {
+
+        int solution = 10;
+
+        while (true) {
+
+            int better = solution + 1;
+
+            if (better <= solution)
+
+                break;
+
+            solution = better;
+
+            if (solution == 20)
+
+                break;
+        }
+
+        System.out.println(solution);
+    }
+}
+```
+
+---
+
+# 10. Worked Examples
+
+---
+
+# Example 1
+
+## Linear Programming
+
+Maximize
+
+```
+Z = 3x + 5y
+```
+
+Subject To
+
+```
+x+y≤4
+
+2x+y≤5
+```
+
+Process
+
+```
+Create Tableau
+
+↓
+
+Pivot
+
+↓
+
+Pivot
+
+↓
+
+Optimal
+```
+
+Result
+
+```
+Maximum Profit
+
+Z = 17
+```
+
+---
+
+# Example 2
+
+## Maximum Flow
+
+Network
+
+```text
+S ----10---- A
+
+|             |
+
+5             15
+
+|             |
+
+B ----10---- T
+```
+
+Iteration
+
+```
+S→A→T
+
+Flow =10
+```
+
+Iteration
+
+```
+S→B→T
+
+Flow =5
+```
+
+Total
+
+```
+15
+```
+
+---
+
+# Example 3
+
+## Iterative Improvement
+
+Current
+
+```
+Score=50
+```
+
+Neighbor
+
+```
+60
+```
+
+Accept
+
+```
+60
+```
+
+Next
+
+```
+75
+```
+
+Accept
+
+Next
+
+```
+80
+```
+
+Accept
+
+Next
+
+```
+79
+```
+
+Reject
+
+Stop
+
+Optimal
+
+```
+80
+```
+
+---
+
+# 11. Complexity Analysis
+
+| Algorithm | Time Complexity | Space |
+|------------|----------------|--------|
+| Simplex | Exponential (Worst), Polynomial-like in practice | O(mn) |
+| Ford-Fulkerson | O(E × MaxFlow) |
+| Edmonds-Karp | O(VE²) |
+| Iterative Improvement | Depends on neighborhood |
+
+---
+
+# 12. Limitations & Edge Cases
+
+---
+
+## Simplex Degeneracy
+
+```
+Two Bases
+
+↓
+
+Same Vertex
+```
+
+Can lead to cycling.
+
+---
+
+## Cycling
+
+```
+A
+
+↓
+
+B
+
+↓
+
+C
+
+↓
+
+A
+```
+
+Never reaches optimum unless anti-cycling rules (e.g., Bland's Rule) are used.
+
+---
+
+## Unbounded Solution
+
+```
+Objective
+
+↑
+
+∞
+```
+
+No upper bound.
+
+---
+
+## Infeasible Solution
+
+```
+Constraint1
+
+×
+
+Constraint2
+
+No Intersection
+```
+
+No feasible solution.
+
+---
+
+## Numerical Instability
+
+Large coefficients
+
+```
+1000000
+
+0.000001
+```
+
+May introduce floating-point errors.
+
+---
+
+## Maximum Flow
+
+### Disconnected Graph
+
+```text
+S ----A
+
+B----T
+```
+
+Flow
+
+```
+0
+```
+
+---
+
+### Zero Capacity
+
+```text
+S --0--> A
+```
+
+Flow
+
+```
+0
+```
+
+---
+
+### Bottleneck
+
+```text
+S--100-->A--1-->T
+```
+
+Maximum Flow
+
+```
+1
+```
+
+---
+
+### Multiple Paths
 
 ```text
 S
 
-↓
+├──5──A──5──T
 
-0
-
-↓
-
-T
+└──5──B──5──T
 ```
 
----
-
-## First Iteration
-
-```text
-S --10--> A
-```
-
-Flow
+Maximum Flow
 
 ```
 10
@@ -462,485 +1092,116 @@ Flow
 
 ---
 
-## Second Iteration
+## Iterative Improvement
 
-```text
-S --5--> B
-```
-
-Flow
+### Local Optimum
 
 ```
-15
+Global Peak
+
+      ▲
+
+Local ▲
+
+Current
 ```
+
+Algorithm may stop before reaching the global optimum.
 
 ---
 
-## Final State
-
-```text
-S
-|\
-| \
-|  \
-10 5
-|   \
-v    v
-A    B
- \   /
-  \ /
-   T
-```
-
-Maximum Flow
+### Poor Initial Solution
 
 ```
-15
-```
-
----
-
-# 11. Example Problem
-
-Network
-
-```text
-S → A = 10
-
-S → B = 5
-
-A → T = 15
-
-B → T = 10
-```
-
-Variables
-
-```
-xSA
-
-xSB
-
-xAT
-
-xBT
-```
-
-Objective
-
-```
-Maximize
-
-xAT + xBT
-```
-
-Constraints
-
-```
-xSA ≤10
-
-xSB ≤5
-
-xAT ≤15
-
-xBT ≤10
-
-xSA=xAT
-
-xSB=xBT
-
-x≥0
-```
-
-Optimal Solution
-
-```
-xSA=10
-
-xSB=5
-
-xAT=10
-
-xBT=5
-
-Maximum Flow=15
-```
-
----
-
-# 12. Java Implementation
-
-> **Note:** In practice, maximum flow is usually solved using Ford–Fulkerson or Edmonds–Karp. The code below demonstrates the LP model (for study) and a Simplex implementation for solving LPs.
-
-## A. Linear Programming Model (Concept)
-
-```java
-/*
-Variables:
-xSA, xSB, xAT, xBT
-
-Maximize:
-Z = xAT + xBT
-
-Subject to:
-xSA <= 10
-xSB <= 5
-xAT <= 15
-xBT <= 10
-xSA - xAT = 0
-xSB - xBT = 0
-x >= 0
-*/
-```
-
-## B. Simplex Algorithm (Generic Java Implementation)
-
-```java
-import java.util.Arrays;
-
-public class Simplex {
-
-    private final double[][] tableau;
-    private final int rows;
-    private final int cols;
-
-    public Simplex(double[][] tableau) {
-        this.tableau = tableau;
-        rows = tableau.length;
-        cols = tableau[0].length;
-    }
-
-    private int getPivotColumn() {
-        int pivotCol = 0;
-        for (int j = 1; j < cols - 1; j++) {
-            if (tableau[rows - 1][j] < tableau[rows - 1][pivotCol]) {
-                pivotCol = j;
-            }
-        }
-        return tableau[rows - 1][pivotCol] >= 0 ? -1 : pivotCol;
-    }
-
-    private int getPivotRow(int pivotCol) {
-        int pivotRow = -1;
-        double minRatio = Double.MAX_VALUE;
-
-        for (int i = 0; i < rows - 1; i++) {
-            if (tableau[i][pivotCol] > 0) {
-                double ratio = tableau[i][cols - 1] / tableau[i][pivotCol];
-
-                if (ratio < minRatio) {
-                    minRatio = ratio;
-                    pivotRow = i;
-                }
-            }
-        }
-        return pivotRow;
-    }
-
-    private void pivot(int pivotRow, int pivotCol) {
-
-        double pivotElement = tableau[pivotRow][pivotCol];
-
-        for (int j = 0; j < cols; j++)
-            tableau[pivotRow][j] /= pivotElement;
-
-        for (int i = 0; i < rows; i++) {
-
-            if (i != pivotRow) {
-
-                double factor = tableau[i][pivotCol];
-
-                for (int j = 0; j < cols; j++) {
-                    tableau[i][j] -= factor * tableau[pivotRow][j];
-                }
-            }
-        }
-    }
-
-    public void solve() {
-
-        while (true) {
-
-            int pivotCol = getPivotColumn();
-
-            if (pivotCol == -1)
-                break;
-
-            int pivotRow = getPivotRow(pivotCol);
-
-            if (pivotRow == -1) {
-                System.out.println("Unbounded Solution");
-                return;
-            }
-
-            pivot(pivotRow, pivotCol);
-        }
-
-        printSolution();
-    }
-
-    private void printSolution() {
-
-        System.out.println("Optimal Tableau:");
-
-        for (double[] row : tableau)
-            System.out.println(Arrays.toString(row));
-
-        System.out.println("\nOptimal Value = " + tableau[rows - 1][cols - 1]);
-    }
-
-    public static void main(String[] args) {
-
-        double[][] tableau = {
-
-                {2,1,1,0,18},
-                {2,3,0,1,42},
-                {-3,-2,0,0,0}
-        };
-
-        Simplex simplex = new Simplex(tableau);
-
-        simplex.solve();
-    }
-}
-```
-
----
-
-# 13. Time Complexity
-
-Worst-case complexity
-
-```
-Exponential
-```
-
-Average practical complexity
-
-```
-Polynomial-like behavior
-```
-
-Although worst-case exponential, Simplex is remarkably efficient for many practical LP problems.
-
----
-
-# 14. Advantages
-
-- Solves any Linear Programming problem
-- Produces optimal solution
-- Handles multiple constraints
-- Well studied
-- Highly accurate
-- Used in industrial optimization
-- Can solve generalized network flow models
-
----
-
-# 15. Limitations and Edge Cases
-
----
-
-## 1. Unbounded Problem
-
-Occurs when the objective can increase indefinitely because constraints do not limit the feasible region.
-
-```text
-Objective
-
-↗
-
-↗
-
-↗
-
-No boundary
-```
-
-Result
-
-```
-No finite optimum.
-```
-
----
-
-## 2. Degenerate Case
-
-Two or more constraints intersect at the same vertex, causing repeated basic feasible solutions.
-
-```text
-   *
-  ***
- *****
-```
-
-Problem
-
-```
-Simplex may perform extra iterations without improving the objective.
-```
-
----
-
-## 3. Numerical Instability
-
-Large differences in coefficient magnitudes can lead to floating-point rounding errors.
-
-```text
-1
-
-100000000
-
-0.0000001
-```
-
-Effect
-
-```
-Floating-point errors
-```
-
----
-
-## 4. Performance Bottleneck
-
-Large LPs require many variables and constraints.
-
-```text
-Small LP
-
-□ □ □
+Bad Start
 
 ↓
 
-Fast
-
-------------------
-
-Huge LP
-
-□□□□□□□□□□□□□□
-
-↓
-
-Many iterations
+Slow Convergence
 ```
 
 ---
 
-## 5. Cycling
+# 13. Comparison Table
 
-Rarely, the algorithm can revisit the same basis repeatedly due to degeneracy.
-
-```text
-A → B → C
-↑       ↓
-└───────┘
-```
-
-Solution
-
-```
-Use Bland's Rule or anti-cycling pivot strategies.
-```
+| Feature | Simplex | Maximum Flow | Iterative Improvement |
+|----------|----------|--------------|-----------------------|
+| Problem Type | Linear Programming | Network Optimization | General Optimization |
+| Goal | Max/Min Objective | Maximize Flow | Improve Solution |
+| Technique | Pivoting | Augmenting Paths | Local Improvement |
+| Uses Constraints | Yes | Yes | Depends |
+| Optimal Solution | Yes | Yes | Not Always |
+| Main Idea | Change Basis | Increase Flow | Improve Current Solution |
 
 ---
 
-## 6. Dense Networks
+# 14. Exam Tips
 
-A network with many edges results in a large number of LP variables.
+## Remember
 
-```text
-A──B──C
-│\/│\/│
-│/\│/\│
-D──E──F
-```
+### Simplex
 
-This increases memory usage and computation time.
-
----
-
-# 16. Comparison with Other Maximum Flow Algorithms
-
-| Algorithm | Technique | Complexity | Best Use |
-|-----------|-----------|------------|----------|
-| Ford-Fulkerson | Augmenting Paths | O(E × Max Flow) | Small graphs |
-| Edmonds-Karp | BFS | O(VE²) | Standard implementation |
-| Dinic | Level Graph | O(V²E) (general) | Large sparse networks |
-| Push-Relabel | Preflow | O(V³) (worst case) | Dense graphs |
-| **Simplex** | Linear Programming | Exponential (worst case) | LP formulations with additional linear constraints |
+- Objective Function
+- Constraints
+- Feasible Region
+- Basic Feasible Solution (BFS)
+- Pivot
+- Tableau
+- Optimality Condition
 
 ---
 
-# 17. Exam Tips
+### Maximum Flow
 
-Remember these key points:
-
-- Maximum Flow can be formulated as a Linear Programming problem.
-- The **objective** is to maximize total flow from source to sink.
-- **Capacity constraints** ensure no edge exceeds its capacity.
-- **Flow conservation** holds at every intermediate node.
-- The **Simplex Method** solves the LP by moving between feasible corner points.
-- For ordinary maximum-flow problems, specialized algorithms are generally more efficient than Simplex.
-- In theory questions, clearly distinguish between the **LP formulation** and the **Simplex solution process**.
+- Source
+- Sink
+- Capacity
+- Flow
+- Residual Graph
+- Augmenting Path
+- Bottleneck Edge
 
 ---
 
-# 18. Frequently Asked Questions
+### Iterative Improvement
 
-### Q1. Can Simplex solve the Maximum-Flow Problem?
-
-**Yes.** Since maximum flow is a linear optimization problem, it can be formulated as a Linear Programming model and solved using the Simplex Method.
-
----
-
-### Q2. Why don't we always use Simplex?
-
-Because specialized graph algorithms such as **Ford-Fulkerson**, **Edmonds-Karp**, and **Dinic** are typically much faster for pure maximum-flow problems.
+- Initial Solution
+- Neighbor Solution
+- Improvement
+- Stop Condition
+- Local Optimum
+- Global Optimum
 
 ---
 
-### Q3. What is the objective function?
+### Frequently Asked Theory Questions
 
-To maximize the total flow leaving the source (or equivalently, entering the sink).
-
----
-
-### Q4. What are the main constraints?
-
-- Capacity constraints
-- Flow conservation constraints
-- Non-negativity constraints
-
----
-
-### Q5. Is the Simplex Method guaranteed to find the optimal solution?
-
-Yes, provided the LP is feasible and bounded.
+1. Define Linear Programming.
+2. Explain the Simplex Method.
+3. What is a pivot operation?
+4. Define Maximum Flow.
+5. Explain Ford-Fulkerson.
+6. What is an augmenting path?
+7. Explain residual graph.
+8. What is iterative improvement?
+9. Compare Simplex and Maximum Flow.
+10. Discuss limitations of iterative improvement.
 
 ---
 
-# 19. Summary
+# 15. Key Takeaways
 
-- **Maximum Flow** finds the largest feasible flow from a source to a sink.
-- The problem can be expressed as a **Linear Programming** model.
-- The **Simplex Method** solves this LP by iteratively improving feasible solutions.
-- Capacity, flow conservation, and non-negativity are the core constraints.
-- Although mathematically elegant and flexible, the Simplex Method is usually not the most efficient approach for standard maximum-flow problems.
-- Understanding the LP formulation is important for engineering examinations because it connects graph theory with optimization techniques.
+> **Final Revision Sheet**
 
----
-
-## One-Minute Revision
-
-| Topic | Key Point |
-|--------|-----------|
-| Goal | Maximize flow from source to sink |
-| Variables | Flow on each directed edge |
-| Objective | Maximize total flow |
-| Constraints | Capacity, conservation, non-negativity |
-| Solution Technique | Simplex Method (Linear Programming) |
-| Practical Alternatives | Ford-Fulkerson, Edmonds-Karp, Dinic |
-| Common Applications | Networks, transportation, logistics, communication, power systems |
+- Optimization aims to maximize or minimize an objective while satisfying constraints.
+- The **Simplex Method** solves linear programming problems by moving between basic feasible solutions using pivot operations.
+- The **Maximum-Flow Problem** finds the greatest possible flow from a source to a sink while respecting edge capacities; Ford–Fulkerson increases flow through augmenting paths.
+- **Iterative Improvement** is a general optimization strategy that repeatedly improves a current solution until no further improvement is possible.
+- Simplex, Maximum Flow, and many other optimization algorithms follow the common principle of progressively improving a solution.
+- Understand the key concepts: **objective function, constraints, tableau, pivot, basis, augmenting path, residual graph, bottleneck edge, and local/global optimum**.
+- Be familiar with common edge cases such as **cycling, unbounded or infeasible LPs, disconnected flow networks, zero-capacity edges, and local optima**.
+- Know the typical complexity:
+  - **Simplex:** Exponential worst case, but efficient in practice.
+  - **Ford–Fulkerson:** `O(E × MaxFlow)` (or `O(EF)` where `F` is the maximum flow value).
+  - **Edmonds–Karp:** `O(VE²)`.
+- In exams, practice drawing **tableaux**, **residual graphs**, and **augmenting paths**, and explain each iteration clearly.
